@@ -1,0 +1,24 @@
+@import url("http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic");
+
+h1 {
+  font-family: 'Lato';
+  font-weight: 500;
+  line-height: 1.1;
+  color: #002D56;
+}
+
+body {
+  font-family: 'Lato';
+  font-weight: 300;
+  line-height: 1.1;
+  color: #002D56;
+  background-color: #fff;
+}
+
+.shiny-text-output {
+  font-family: 'Lato';
+  font-weight: 400;
+  line-height: 1.2;
+  color: #002D56;
+  background-color: #fff;
+}
