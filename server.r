@@ -1,4 +1,4 @@
-library(shiny)
+library(shiny); library(scales)
 
 # Define server logic required to plot various variables against mpg
 shinyServer(function(input, output) {
@@ -10,26 +10,53 @@ shinyServer(function(input, output) {
     df
   }
   
-
-  output$summary <- renderPrint({
+  logitModel <- reactive({
     data <- c(input$n1,input$x1,input$n2,input$x2)
-
     
-    
-    #     n1 <- input$n1
-    #     n2 <- input$n2
-    #     x1 <- input$x1
-    #     x2 <- input$x2
-    
-  
     df <- generateRawData(data)
     
     logit1 <- (glm(signup ~ test, data = df, family = "binomial"))
-    
-    
-    summary(logit1)
-   
+    logit1
   })
   
+  predictions <- reactive({
+    newdata <- data.frame(test=factor(c(1,2)))
+    newdata$testp <- predict(logitModel(), newdata=newdata, type='response')
+    pred <- predict(logitModel(), newdata=newdata, type='response', se.fit=TRUE)
+    newdata$ll <- newdata$testp - 1.96*pred$se.fit
+    newdata$ul <- newdata$testp + 1.96*pred$se.fit
+    newdata
+  })
+
+  ## calc conversion rates
+  output$con <- renderPrint({
+    
+    cat(paste0("Variation 1: ", percent(predictions()$testp[1]), 
+               "  Variation 2: ",  percent(predictions()$testp[2])))
+    
+  })
   
+  # calc significance
+  output$pval <- renderPrint({
+    
+    if(input$x2 < 10 | input$x1 < 10){
+      return(cat("Not enough conversions"))
+    } 
+    
+    if(input$n2 - input$x2 < 10 | input$n1 - input$x1 < 10){
+      return(cat("Not enough failures"))
+    }
+    
+    if(summary(logitModel())$coeff[2,4] < 0.1){
+      cat("This result is statistically significant.")
+      if(predictions()$testp[1] > predictions()$testp[2]){
+        cat("\n\nVariation 1 is the winner.")
+      } else{cat("\n\nVariation 2 is the winner.")}
+    } else{cat("This result is not statistically significant.")}
+    
+    
+    cat(paste0("\n\nP-value = ", round(summary(logitModel())$coeff[2,4], 3)))
+    
+    
+  })
 })
