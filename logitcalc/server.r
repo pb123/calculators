@@ -14,7 +14,6 @@ shinyServer(function(input, output) {
     data <- c(input$n1,input$x1,input$n2,input$x2)
     
     df <- generateRawData(data)
-    
     logit1 <- (glm(signup ~ test, data = df, family = "binomial"))
     logit1
   })
@@ -48,7 +47,7 @@ shinyServer(function(input, output) {
     }
     
     if(summary(logitModel())$coeff[2,4] < 0.1){
-      cat("This result is statistically significant.")
+      cat("This results is statistically significant.")
       if(predictions()$testp[1] > predictions()$testp[2]){
         cat("\n\nVariation 1 is the winner.")
       } else{cat("\n\nVariation 2 is the winner.")}
