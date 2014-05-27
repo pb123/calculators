@@ -4,7 +4,7 @@ library(shiny)
 
 shinyUI(fluidPage(
   
-  includeCSS("bootstrap.css"),
+  includeCSS("../bootstrap.css"),
   
   # Application title
   headerPanel("Conversion Test Calculator"),
